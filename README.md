@@ -7,7 +7,7 @@ I'm developing lightweight Python library for rapid statistical and ML modelling
 ***
 # Modelling Framework:
 
-![alt text](docs/Modelling Framework.png)
+![alt text](docs/Modelling_Framework.png)
 
 ***
 # Examples:
