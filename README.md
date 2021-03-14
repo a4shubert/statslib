@@ -1,5 +1,5 @@
 # statslib
-I'm developing lightweight Python library for rapid statistical and ML modelling, based on:
+I'm developing a lightweight Python library for rapid statistical and ML modelling, based on:
 * `pandas`
 * `statsmodels`
 * `scikit-learn`
