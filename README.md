@@ -8,8 +8,8 @@ I'm developing a lightweight Python library for rapid statistical and ML modelli
 # Examples:
 
 Please see following jupyter notebooks:
-* [statslib demo](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/docs/Statslib%20Demo.ipynb) for library overview
-* [linear model]()
+* [statslib demo](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/Statslib_Demo.ipynb) for library overview
+* [linear model](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/Linear%20Model.ipynb)
 
 Please use `conda_env.yml` to create `statslib_env` conda virtual environment.
 
