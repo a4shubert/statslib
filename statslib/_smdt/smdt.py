@@ -239,7 +239,7 @@ class SmartData(object):
         self._logger.info("Saved to: {}".format(book))
 
     def __setitem__(self, key, value):
-        # We just put the data into the main collection:
+        # We just put the datasets into the main collection:
         main_collection = getattr(self, self._main_collection)
         main_collection.__setitem__(key, value)
 

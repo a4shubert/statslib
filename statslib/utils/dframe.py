@@ -21,7 +21,7 @@ def get_df_from_excel(file_path, columns=None, *args, **kwargs):
         for column in columns:
             df[column] = pd.to_datetime(df[column])
     else:
-        # looking at the first row to infer data types
+        # looking at the first row to infer datasets types
         for column in df.columns:
             is_str_flag = isinstance(df.loc[0, column], str)
             if is_str_flag:

@@ -138,5 +138,5 @@ class Acquirer(object):
 
         end = datetime.now()
         self._logger.debug(
-            "It took {:.2g} mins to read data from folder".format(
+            "It took {:.2g} mins to read datasets from folder".format(
                 (end - start).total_seconds() / 60))

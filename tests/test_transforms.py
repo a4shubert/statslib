@@ -9,7 +9,7 @@ from statslib.utils.dframe import to_pd_todatetime
 
 class TransformationsTest(TestCase):
     def setUp(self) -> None:
-        path = os.path.join(TEST_FOLDER, 'data', 'y.csv')
+        path = os.path.join(TEST_FOLDER, '../statslib/datasets', 'data/y.csv')
         df = pd.read_csv(path)
         df = to_pd_todatetime(df, 'day', day_only=True)
         self.y = df.set_index('day').squeeze().rename('y')

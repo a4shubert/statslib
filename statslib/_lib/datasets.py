@@ -1,22 +1,13 @@
 import os
-from statslib._pathmap import TEST_FOLDER
+from statslib._pathmap import DATA_FOLDER
 from statslib.utils.common import to_namedtuple
 from statslib.utils.dframe import to_pd_todatetime
 import pandas as pd
 
-_path = os.path.join(TEST_FOLDER, 'data', 'y.csv')
-_y_df = pd.read_csv(_path)
-_y_df = to_pd_todatetime(_y_df, 'day', day_only=False)
-_y_df = _y_df.set_index('day').squeeze()
 
-_path = os.path.join(TEST_FOLDER, 'data', 'x.csv')
-_x_df = pd.read_csv(_path)
-_x_df = to_pd_todatetime(_x_df, 'day', day_only=False)
-_x_df = _x_df.set_index('day').squeeze()
 
-_path = os.path.join(TEST_FOLDER, 'data', 'oil.csv')
+_path = os.path.join(DATA_FOLDER, 'oil.csv')
 _oil_df = pd.read_csv(_path)
-
 _oil_dict = dict(df=_oil_df, desc = list(zip(['spirit', 'gravity', 'pressure', 'distil', 'endpoint'], [
     'percentage yield of petroleum spirit',
     "specific gravity of the crude",
@@ -25,7 +16,11 @@ _oil_dict = dict(df=_oil_df, desc = list(zip(['spirit', 'gravity', 'pressure', '
     "the petroleum fraction end point, in ◦F"
 ])))
 
+_path = os.path.join(DATA_FOLDER, 'stocks.csv')
+_stocks_df = pd.read_csv(_path)
+_stocks_df = to_pd_todatetime(_stocks_df, 'day')
+_stocks_df.set_index('day', inplace=True)
 
-datasets_dict = dict(y=_y_df, X=_x_df, oil=_oil_dict)
+datasets_dict = dict(oil=_oil_dict, stocks={'df': _stocks_df})
 
 datasets = to_namedtuple(datasets_dict, True)

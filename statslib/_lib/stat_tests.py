@@ -7,7 +7,7 @@ from statsmodels.tsa.stattools import kpss as _kpss
 
 
 def test_jarque_bera(s, alpha=0.01, **kwargs):
-    print('H0: sample data have the skewness and kurtosis matching a normal distribution', end='\n\n')
+    print('H0: sample datasets have the skewness and kurtosis matching a normal distribution', end='\n\n')
     print('Results of Jarque Bera Test:')
     jqberatest = _jarque_bera(s, **kwargs)
     jq_output = _pd.Series(jqberatest, index=['Test Statistic', 'p-value', 'skew', 'kurtosis'])
