@@ -2,8 +2,9 @@ import inspect
 from statslib._lib.gcalib import CalibType
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
+import matplotlib.pyplot as _plt
+import statsmodels.api as _sm
+import math as _math
 
 
 class GeneralModel:
@@ -36,6 +37,8 @@ class GeneralModel:
             """Helper function to calculate sum of squares along first axis"""
             return np.sum(x ** 2, axis=axis)
 
+        self.forecast_index = idx
+
         if 'start' in inspect.signature(self.fitted.predict).parameters:
             self.v_hat = self.fitted.predict(
                 self.endog(idx).index.min(),
@@ -52,10 +55,10 @@ class GeneralModel:
         except IndexError:
             pass
 
-    def plot_diagnostics(self, figsize=(9 * 1.6, 9)):
+    def plot_diagnostics(self, figsize=(15, 15)):
         std_resid = self.std_residuals
         if std_resid is not None:
-            fig, axs = plt.subplots(2, 2, figsize=figsize)
+            fig, axs = _plt.subplots(3, 2, figsize=figsize)
             from statslib.utils.plots import get_standard_colors
             clrs = get_standard_colors()
             pd.Series(std_resid, index=self.v_hat.index).plot(ax=axs[0, 0], color=clrs[1])
@@ -73,11 +76,39 @@ class GeneralModel:
             axs[0, 1].legend()
             axs[0, 1].set_title("Histogram plus estimated density")
 
-            sm.graphics.qqplot(std_resid, line='q', fit=True, ax=axs[1, 0])
+            _sm.graphics.qqplot(std_resid, line='q', fit=True, ax=axs[1, 0])
             axs[1, 0].set_title('Normal QQ Plot')
 
-            sm.graphics.tsa.plot_acf(std_resid, ax=axs[1, 1])
+            _sm.graphics.tsa.plot_acf(std_resid, ax=axs[1, 1])
             axs[1, 1].set_title('Correlogram')
 
-            plt.tight_layout()
-            plt.show()
+            axs[2, 0].scatter(self.fitted.fittedvalues, self.residuals)
+            axs[2, 0].hlines(0, min(self.fitted.fittedvalues), max(self.fitted.fittedvalues))
+            axs[2, 0].set_xlabel('fitted')
+            axs[2, 0].set_ylabel('resid')
+            axs[2, 0].set_title('Fitted values vs. Residuals')
+
+            axs[2, 1].scatter(range(len(self.std_residuals)), self.std_residuals)
+            axs[2, 1].hlines(0, 0, len(self.std_residuals))
+            axs[2, 1].set_xlabel('index')
+            axs[2, 1].set_ylabel('std_resid')
+            axs[2, 1].set_title('Index plot of standardized residuals')
+
+            _plt.tight_layout()
+            _plt.show()
+
+            L = 2
+            K = _math.ceil(len(self.DM.endog_names) / L)
+            i = j = 0
+            fig, axs = _plt.subplots(K, L, figsize=(15, 15))
+            for curve in self.DM.endog_names:
+                axs[i, j].scatter(self.DM.dm_ext[curve].iloc[self.forecast_index].values.tolist(), self.std_residuals)
+                axs[i, j].set_xlabel(curve)
+                axs[i, j].set_ylabel('std_res')
+                j += 1
+                if j % L == 0:
+                    i += 1
+                    j = 0
+            _plt.suptitle('Standardized Residuals vs. Explanatory Variable', size=19)
+            _plt.tight_layout()
+            _plt.show()
