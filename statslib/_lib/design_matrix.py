@@ -8,7 +8,7 @@ from IPython.display import display
 
 
 class DesignMatrix:
-    def __init__(self, y=None, f=None, X=None, gs=None, add_const=True):
+    def __init__(self, y=None, X=None, f=None,  gs=None, add_const=True):
 
         self.f = None
         self.names = dict()
