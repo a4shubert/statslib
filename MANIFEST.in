@@ -1,0 +1,2 @@
+include statslib/datasets/oil.csv
+include statslib/datasets/stocks.csv
