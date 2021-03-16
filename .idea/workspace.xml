@@ -4,17 +4,6 @@
     <list default="true" id="83fd089a-1307-437e-b038-75f12d107336" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/jupyter/Linear Model.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/jupyter/Linear Model.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/jupyter/Statslib_Demo.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/jupyter/Statslib_Demo.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/statslib/_lib/datasets.py" beforeDir="false" afterPath="$PROJECT_DIR$/statslib/_lib/datasets.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/statslib/_lib/stat_tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/statslib/_lib/stat_tests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/statslib/_pathmap.py" beforeDir="false" afterPath="$PROJECT_DIR$/statslib/_pathmap.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/statslib/_smdt/acquirer.py" beforeDir="false" afterPath="$PROJECT_DIR$/statslib/_smdt/acquirer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/statslib/_smdt/smdt.py" beforeDir="false" afterPath="$PROJECT_DIR$/statslib/_smdt/smdt.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/statslib/utils/dframe.py" beforeDir="false" afterPath="$PROJECT_DIR$/statslib/utils/dframe.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/data/oil.csv" beforeDir="false" afterPath="$PROJECT_DIR$/statslib/datasets/oil.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/data/x.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/data/y.csv" beforeDir="false" afterPath="$PROJECT_DIR$/tests/data/y.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_transforms.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_transforms.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
