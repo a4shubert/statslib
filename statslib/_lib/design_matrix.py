@@ -55,7 +55,7 @@ class DesignMatrix:
 
             if y is not None:
                 self.dm_ext = pd.concat([self.y.rename(self.exog_name), self.v, self.X, self.gX], axis=1)
-                self.dm = pd.concat([self.y, self.v, self.gX], axis=1).dropna(axis=0)
+                self.dm = pd.concat([self.y.rename('y'), self.v, self.gX], axis=1).dropna(axis=0)
                 self.gX = self.dm[[name for name in self.names.keys() if name != 'v']]
                 self.gX = self.gX[sorted(self.gX.columns)]
             else:
