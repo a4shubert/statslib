@@ -31,7 +31,7 @@ class DesignMatrix:
             if isinstance(y, pd.DataFrame):
                 y = y.squeeze()
             self.exog_name = y.name
-            self.y = y.rename('y')
+            self.y = y
             self.v = self.f(y).rename('v')
             self.names.update({'v': y.name})
             self._n_y = len(self.y)
@@ -74,9 +74,16 @@ class DesignMatrix:
             self.n = self._n_y if self._n_y is not None else self._n_x
 
     def describe(self, figsize=(8 * 1.6, 8)):
-        lst = [self.dm_ext[self.exog_name].describe()] + [self.dm_ext[c].describe() for c in self.endog_names]
+        if self.endog_names:
+            lst = [self.dm_ext[self.exog_name].describe()] + [self.dm_ext[c].describe() for c in self.endog_names]
+        else:
+            lst = [self.dm_ext[self.exog_name].describe()]
+
         res_df = pd.concat(lst, axis=1)
-        res_df.T.plot(figsize=figsize)
+        if res_df.T.shape[0] ==1:
+            res_df.T.plot(figsize=figsize, kind='bar')
+        else:
+            res_df.T.plot(figsize=figsize)
         return res_df
 
     def seasonal_decompose(self, **kwargs):

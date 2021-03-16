@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="stats-lib",
+    name="statslib",
     version="0.0.1",
     author="Alexander Shubert",
     author_email="ashubertt@gmail.com",
