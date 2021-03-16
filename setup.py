@@ -16,4 +16,5 @@ setuptools.setup(
     classifiers=[
         "Programming Language :: Python :: 3"
     ],
+    include_package_data=True
 )
