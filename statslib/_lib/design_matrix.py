@@ -8,7 +8,7 @@ from IPython.display import display
 
 
 class DesignMatrix:
-    def __init__(self, y=None, X=None, f=None,  gs=None, add_const=True):
+    def __init__(self, y=None, X=None, f=None, gs=None, add_const=True):
 
         self.f = None
         self.names = dict()
@@ -70,8 +70,11 @@ class DesignMatrix:
             self.gX = None
         if self._n_x is not None and self._n_y is not None and self._n_x != self._n_y:
             print('WARNING: y and X dimensions are not the same!')
+            self.n = self.dm.shape[0]
         else:
             self.n = self._n_y if self._n_y is not None else self._n_x
+        self.dm_ext.index.name = 't'
+        self.dm.index.name = 't'
 
     def describe(self, figsize=(8 * 1.6, 8)):
         if self.endog_names:
@@ -80,10 +83,10 @@ class DesignMatrix:
             lst = [self.dm_ext[self.exog_name].describe()]
 
         res_df = pd.concat(lst, axis=1)
-        if res_df.T.shape[0] ==1:
+        if res_df.T.shape[0] == 1:
             res_df.T.plot(figsize=figsize, kind='bar')
         else:
-            res_df.T.plot(figsize=figsize)
+            res_df.drop('count', axis=0).T.plot(figsize=figsize)
         return res_df
 
     def seasonal_decompose(self, **kwargs):
@@ -129,7 +132,7 @@ class DesignMatrix:
 
     def plot_covariate_vs_lag(self, covariate_name, up_to_lag):
         h = up_to_lag
-        cov_df = self.dm_ext[covariate_name]
+        cov_df = self.dm_ext[covariate_name].dropna()
         lagged_df = pd.concat([cov_df] + [cov_df.shift(i).rename(f'Lag{i}_{covariate_name}') for i in range(1, h + 1)],
                               axis=1).dropna()
         y_lagged = lagged_df[covariate_name]
@@ -139,7 +142,7 @@ class DesignMatrix:
 
     def plot_dependent_vs_covariage_lag(self, covariate_name, up_to_lag):
         h = up_to_lag
-        cov_df = self.dm_ext[covariate_name]
+        cov_df = self.dm_ext[covariate_name].dropna()
         lagged_df = pd.concat([cov_df] + [cov_df.shift(i).rename(f'Lag{i}_{covariate_name}') for i in range(1, h + 1)],
                               axis=1).dropna()
         y_lagged = self.y.rename(self.exog_name)
