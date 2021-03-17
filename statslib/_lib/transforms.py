@@ -1,10 +1,10 @@
-import pandas as _pd
-import numpy as _np
-import pandas as pd
-import statsmodels.api as _sm
-
 from abc import ABCMeta as _ABCMeta
 from abc import abstractmethod as _abstractmethod
+
+import numpy as _np
+import pandas as _pd
+import pandas as pd
+import statsmodels.api as _sm
 
 
 class _GeneralTransform(metaclass=_ABCMeta):
@@ -142,7 +142,7 @@ class standardize(_GeneralTransform):
     v_t = \dfrac{y_t-\bar{y}_{t-n..t}}{\sigma_{t-n..t}}
     """
 
-    def __init__(self, n):
+    def __init__(self, n=None):
         self.n = n
 
     def __call__(self, y, *args, **kwargs):
@@ -150,7 +150,8 @@ class standardize(_GeneralTransform):
             y = y.squeeze()
         self.y0 = y.iloc[:self.n].values.tolist()
         self.idx = y.index
-        v = (y - y.rolling(self.n).mean()) / y.rolling(self.n).std()
+        # v = (y - y.rolling(self.n).mean()) / y.rolling(self.n).std()
+        v = (y - y.mean()) / y.std()
         return v.rename('v')
 
     def inv(self, v, y0, idx):
