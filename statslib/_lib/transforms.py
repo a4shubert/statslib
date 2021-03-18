@@ -156,3 +156,19 @@ class standardize(_GeneralTransform):
 
     def inv(self, v, y0, idx):
         raise NotImplementedError()
+
+
+class identical(_GeneralTransform):
+    """
+    v_t = y_t
+    """
+    def __init__(self):
+        self.n = 1
+
+    def __call__(self, y, *args, **kwargs):
+        if isinstance(y, pd.DataFrame):
+            y = y.squeeze()
+        return y.rename('v')
+
+    def inv(self, v, y0, idx):
+        return v
