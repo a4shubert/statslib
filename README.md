@@ -17,7 +17,7 @@ Please use `conda_env.yml` to create `statslib_env` conda virtual environment.
 ***
 # Modelling Framework:
 
-![alt text](img/Modelling_Framework.png)
+![alt text](img/Modelling_Framework2.png)
 
 ***
 # Class structure:
