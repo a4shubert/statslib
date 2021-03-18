@@ -23,9 +23,8 @@ class DesignMatrix:
 
         if y is not None:
             if f is None:
-                self.f = lambda s: s
-                self.f.n = 1
-                self.f.inv = lambda v, y0, idx: v
+                from statslib._lib.transforms import identical
+                self.f = identical()
             else:
                 self.f = f
             if isinstance(y, pd.DataFrame):

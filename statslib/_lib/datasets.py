@@ -8,7 +8,10 @@ from statslib.utils.dframe import to_pd_todatetime
 
 _path = os.path.join(DATA_FOLDER, 'oil.csv')
 _oil_df = pd.read_csv(_path)
-_oil_desc_dict = list(zip(['spirit', 'gravity', 'pressure', 'distil', 'endpoint'], [
+_oil_desc_dict = list(
+    zip(
+        ['spirit', 'gravity', 'pressure', 'distil', 'endpoint'],
+        [
     'percentage yield of petroleum spirit',
     "specific gravity of the crude",
     "crude oil vapour pressure, measured in pounds per square inch",
@@ -27,8 +30,19 @@ _uschange_df = to_pd_todatetime(_uschange_df, 'date')
 _uschange_df.set_index('date', inplace=True)
 _uschange_df.index.freq = 'Q'
 
+_uschnage_desc_dict = list(zip(['consumption', 'production', 'savings', 'unemployment'],
+['percentage change in us consumption',
+'precentage change in inudstrial production',
+'percentage change in personal savings',
+'changes in the unemployment rate (as this is already a percentage)'
+ ]))
+
+
 datasets_dict = dict(oil={'df': _oil_df, 'desc': _oil_desc_dict},
                      stocks={'df': _stocks_df},
-                     uschange={'df': _uschange_df})
+                     uschange={'df': _uschange_df, 'desc': _uschnage_desc_dict})
 
 datasets = to_namedtuple(datasets_dict, True)
+
+
+
