@@ -70,3 +70,4 @@ def test_breusch_pagan(s, exog, alpha=0.01, **kwargs):
         print(f'p-value {pvalue:.4f} is less alpha {alpha} => Reject H0')
     else:
         print('Can NOT reject H0')
+

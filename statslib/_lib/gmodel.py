@@ -29,6 +29,7 @@ class GeneralModel:
             self.calibrator = self.gc.cf(endog=self.endog(idx),
                                          exog=self.exog(idx),
                                          **self.gc.kwargs)
+
             self.fitted = self.calibrator.fit(**kwargs)
             self.y0 = self.DM.dm.y.iloc[idx].tail(self.DM.f.n)
 
