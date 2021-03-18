@@ -1,5 +1,7 @@
-name: statslib_env
+name: statslib_env2
 channels:
+  - anaconda
+  - conda-forge
   - defaults
 dependencies:
   - alabaster=0.7.12
