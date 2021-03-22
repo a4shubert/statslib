@@ -25,6 +25,7 @@ class GeneralModel:
         return self.DM.dm.v.iloc[idx]
 
     def fit(self, idx, **kwargs):
+
         if self.gc.calib_type is CalibType.sm:
             self.calibrator = self.gc.cf(endog=self.endog(idx),
                                          exog=self.exog(idx),

@@ -57,9 +57,12 @@ import math
 
 
 def df_see_null_na_values(df):
+    if isinstance(df, pd.Series):
+        df = df.to_frame()
     from IPython.display import display
     display(df[df.isnull().any(axis=1)])
     display(df[df.isna().any(axis=1)])
+    return df[df.isnull().any(axis=1)].index
 
 
 def to_pd_todatetime(df, col, day_only=False, **kwargs):

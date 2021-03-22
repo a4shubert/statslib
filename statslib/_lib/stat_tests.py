@@ -20,7 +20,10 @@ def test_jarque_bera(s, alpha=0.01, **kwargs):
 
 
 def test_kpss(timeseries, alpha=0.01, **kwargs):
-    print('H0: observable time series is stationary around a deterministic trend', end='\n\n')
+    trend_name = kwargs.get('regression', 'constant')
+    if trend_name == 'ct':
+        trend_name = 'trend'
+    print('H0: observable time series is stationary around a {}'.format(trend_name), end='\n\n')
     print('Results of KPSS Test:')
     kpsstest = _kpss(timeseries, **kwargs)
     kpss_output = _pd.Series(kpsstest[0:3], index=['Test Statistic', 'p-value', 'Lags Used'])

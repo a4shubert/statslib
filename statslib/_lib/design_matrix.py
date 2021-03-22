@@ -83,7 +83,7 @@ class DesignMatrix:
 
         res_df = pd.concat(lst, axis=1)
         if res_df.T.shape[0] == 1:
-            res_df.T.plot(figsize=figsize, kind='bar')
+            res_df.drop('count', axis=0).T.plot(figsize=figsize, kind='bar')
         else:
             res_df.drop('count', axis=0).T.plot(figsize=figsize)
         return res_df
