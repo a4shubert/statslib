@@ -137,6 +137,27 @@ class difference_operator(_GeneralTransform):
         return y_hat.loc[vidx] if vidx is not None else y_hat
 
 
+class min_max(_GeneralTransform):
+    """
+    v_t = \dfrac{y-y.min()}{y.max()-y.min()}
+    """
+    def __init__(self, n=None):
+        self.n = n
+
+    def __call__(self, y, *args, **kwargs):
+        if isinstance(y, pd.DataFrame):
+            y = y.squeeze()
+        self.y0 = y.iloc[:self.n].values.tolist()
+        self.idx = y.index
+        v = (y - y.min()) / (y.max() - y.min())
+        return v.rename('v')
+
+    def inv(self, v, y0, idx):
+        raise NotImplementedError()
+
+
+
+
 class standardize(_GeneralTransform):
     """
     v_t = \dfrac{y_t-\bar{y}_{t-n..t}}{\sigma_{t-n..t}}
@@ -150,7 +171,6 @@ class standardize(_GeneralTransform):
             y = y.squeeze()
         self.y0 = y.iloc[:self.n].values.tolist()
         self.idx = y.index
-        # v = (y - y.rolling(self.n).mean()) / y.rolling(self.n).std()
         v = (y - y.mean()) / y.std()
         return v.rename('v')
 
