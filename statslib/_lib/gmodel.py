@@ -32,7 +32,12 @@ class GeneralModel:
                                          **self.gc.kwargs)
 
             self.fitted = self.calibrator.fit(**kwargs)
-            self.y0 = self.DM.dm.y.iloc[idx].tail(self.DM.f.n)
+
+        if self.gc.calib_type is CalibType.sk:
+            self.calibrator = self.gc.cf(**self.gc.kwargs)
+            self.fitted = self.calibrator.fit(self.exog(idx), self.endog(idx))
+
+        self.y0 = self.DM.dm.y.iloc[idx].tail(self.DM.f.n)
 
     def forecast(self, idx):
         def sumofsq(x, axis=0):
@@ -47,14 +52,18 @@ class GeneralModel:
                 self.endog(idx).index.max(),
                 exog=self.exog(idx))
         else:
-            self.v_hat = self.fitted.predict(exog=self.exog(idx))
+            if self.gc.calib_type is CalibType.sm:
+                self.v_hat = self.fitted.predict(exog=self.exog(idx))
+            if self.gc.calib_type is CalibType.sk:
+                self.v_hat = self.fitted.predict(self.exog(idx))
+                self.v_hat = pd.Series(self.v_hat, index=self.exog(idx).index).rename('v_hat')
         self.y_hat = self.DM.f.inv(self.v_hat, y0=self.y0, idx=self.v_hat.index)
         try:
             self.residuals = self.DM.dm.loc[self.v_hat.index]['v'].values - self.v_hat.values
             sigma2 = 1.0 / self.fitted.nobs * sumofsq(self.residuals)
             self.std_residuals = self.residuals / np.sqrt(sigma2)
 
-        except IndexError:
+        except Exception:
             pass
 
     def plot_diagnostics(self, figsize=(15, 15)):
