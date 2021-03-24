@@ -63,6 +63,9 @@ class GeneralModel:
             sigma2 = 1.0 / self.fitted.nobs * sumofsq(self.residuals)
             self.std_residuals = self.residuals / np.sqrt(sigma2)
 
+            self.residuals = pd.Series(self.std_residuals, index=self.v_hat.index)
+            self.std_residuals = pd.Series(self.std_residuals, index=self.v_hat.index)
+
         except Exception:
             pass
 
@@ -72,11 +75,11 @@ class GeneralModel:
             fig, axs = _plt.subplots(3, 2, figsize=figsize)
             from statslib.utils.plots import get_standard_colors
             clrs = get_standard_colors()
-            pd.Series(std_resid, index=self.v_hat.index).plot(ax=axs[0, 0], color=clrs[1])
+            std_resid.plot(ax=axs[0, 0], color=clrs[1])
             axs[0, 0].hlines(0, self.v_hat.index.min(), self.v_hat.index.max())
             axs[0, 0].set_title('Standardized residuals')
 
-            axs[0, 1].hist(std_resid, density=True)
+            axs[0, 1].hist(std_resid.values, density=True)
             from scipy.stats import gaussian_kde, norm
             kde = gaussian_kde(std_resid)
             xlim = (-1.96 * 2, 1.96 * 2)
@@ -87,20 +90,20 @@ class GeneralModel:
             axs[0, 1].legend()
             axs[0, 1].set_title("Histogram plus estimated density")
 
-            _sm.graphics.qqplot(std_resid, line='q', fit=True, ax=axs[1, 0])
+            _sm.graphics.qqplot(std_resid.values, line='q', fit=True, ax=axs[1, 0])
             axs[1, 0].set_title('Normal QQ Plot')
 
             _sm.graphics.tsa.plot_acf(std_resid, ax=axs[1, 1])
             axs[1, 1].set_title('Correlogram')
 
-            axs[2, 0].scatter(self.fitted.fittedvalues, self.residuals)
+            axs[2, 0].scatter(self.fitted.fittedvalues, self.residuals.values)
             axs[2, 0].hlines(0, min(self.fitted.fittedvalues), max(self.fitted.fittedvalues))
             axs[2, 0].set_xlabel('fitted')
             axs[2, 0].set_ylabel('resid')
             axs[2, 0].set_title('Fitted values vs. Residuals')
 
-            axs[2, 1].scatter(range(len(self.std_residuals)), self.std_residuals)
-            axs[2, 1].hlines(0, 0, len(self.std_residuals))
+            axs[2, 1].scatter(range(len(self.std_residuals)), self.std_residuals.values)
+            axs[2, 1].hlines(0, 0, len(self.std_residuals.values))
             axs[2, 1].set_xlabel('index')
             axs[2, 1].set_ylabel('std_resid')
             axs[2, 1].set_title('Index plot of standardized residuals')
@@ -113,7 +116,7 @@ class GeneralModel:
             i = j = 0
             fig, axs = _plt.subplots(K, L, figsize=(15, 15))
             for curve in self.DM.endog_names:
-                axs[i, j].scatter(self.DM.dm_ext[curve].iloc[self.forecast_index].values.tolist(), self.std_residuals)
+                axs[i, j].scatter(self.DM.dm_ext[curve].iloc[self.forecast_index].values.tolist(), self.std_residuals.values)
                 axs[i, j].set_xlabel(curve)
                 axs[i, j].set_ylabel('std_res')
                 j += 1

@@ -9,3 +9,7 @@ def mean_percentage_error(y_true, y_pred):
 def mean_absolute_percentage_error(y_true, y_pred):
     y_true, y_pred = _np.array(y_true), _np.array(y_pred)
     return _np.mean(_np.abs((y_true - y_pred) / y_true))
+
+
+def root_mean_squared_error(y_true, y_pred):
+    return _np.sqrt(mean_squared_error(y_true, y_pred))

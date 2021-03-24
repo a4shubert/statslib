@@ -37,7 +37,7 @@ class DesignMatrix:
 
         if X is not None:
             if gs is None:
-                self.gs = [lambda s: s] * len(X.columns)
+                self.gs = [identical()] * len(X.columns)
             else:
                 self.gs = gs
             self.endog_names = X.columns.tolist()
@@ -47,7 +47,10 @@ class DesignMatrix:
             if add_const:
                 self.names.update({'const': 'const'})
             self._inv_names = {v: k for k, v in self.names.items()}
-            self.gX = X.agg(dict(zip(X.columns.tolist(), self.gs)))
+            if isinstance(gs, dict):
+                self.gX = X.agg(gs)
+            else:
+                self.gX = X.agg(dict(zip(X.columns.tolist(), self.gs)))
             if add_const:
                 self.gX = sm.tools.tools.add_constant(self.gX)
             self.gX.rename(columns=self._inv_names, inplace=True)
