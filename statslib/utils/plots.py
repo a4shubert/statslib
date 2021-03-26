@@ -19,7 +19,7 @@ def plot_to_grid(df, columns=None, title='', plots_per_row=3, legend_on_a_side=F
     _plt.suptitle(title)
     if legend_on_a_side:
         _plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-
+    _plt.tight_layout(h_pad=-2)
     _plt.show()
 
 

@@ -10,14 +10,15 @@ class CrossValidation:
         self.metric = metric
         self.gm = gm
 
-    def run(self):
+    def run(self, to_plot=True):
         metric_list = []
         L = 2
         K = math.ceil(len(self.splits) / L)
         if K==1:
             K+=1
         i = j = 0
-        fig, axs = plt.subplots(K, L, figsize=(15, 15))
+        if to_plot:
+            fig, axs = plt.subplots(K, L, figsize=(15, 15))
         for train_index, test_index in self.splits:
             self.gm.fit(train_index)
             self.gm.forecast(test_index)
@@ -31,18 +32,20 @@ class CrossValidation:
             y_hat.sort_index(inplace=True)
             y.at[y0.index.max()] = y0[y0.index.max()]
             y.sort_index(inplace=True)
-            axs[i, j].set_title(r'$\varepsilon_{CV}=$' + f'{metric_val:.4f}')
-            y_train.plot(ax=axs[i, j], c='#988ED5')
-            y_hat.plot(ax=axs[i, j], c='#8EBA42')
-            y.plot(ax=axs[i, j], c='#E24A33')
-            axs[i, j].legend(['$y_t$', '$\hat{y}$', '$y_{true}$'])
+            if to_plot:
+                axs[i, j].set_title(r'$\varepsilon_{CV}=$' + f'{metric_val:.4f}')
+                y_train.plot(ax=axs[i, j], c='#988ED5')
+                y_hat.plot(ax=axs[i, j], c='#8EBA42')
+                y.plot(ax=axs[i, j], c='#E24A33')
+                axs[i, j].legend(['$y_t$', '$\hat{y}$', '$y_{true}$'])
             j += 1
             if j % L == 0:
                 i += 1
                 j = 0
         CV_error = np.mean(metric_list)
         CV_std = np.std(metric_list)
-        print(f'CV_error: {CV_error:.4f} +/- {CV_std:.4f}')
-        plt.tight_layout()
-        plt.show()
+        print(f'CV_error: {CV_error:.2f}, CV_std: {CV_std:.2f} | ({CV_error-CV_std:.2f}  {CV_error+CV_std:.2f})')
+        if to_plot:
+            plt.tight_layout()
+            plt.show()
         return CV_error, CV_std

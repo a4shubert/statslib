@@ -137,25 +137,51 @@ class difference_operator(_GeneralTransform):
         return y_hat.loc[vidx] if vidx is not None else y_hat
 
 
-class standardize(_GeneralTransform):
+class min_max(_GeneralTransform):
     """
-    v_t = \dfrac{y_t-\bar{y}_{t-n..t}}{\sigma_{t-n..t}}
+    v_t = \dfrac{y-y.min()}{y.max()-y.min()}
     """
-
     def __init__(self, n=None):
-        self.n = n
+        self.n = 1
 
     def __call__(self, y, *args, **kwargs):
         if isinstance(y, pd.DataFrame):
             y = y.squeeze()
         self.y0 = y.iloc[:self.n].values.tolist()
         self.idx = y.index
-        # v = (y - y.rolling(self.n).mean()) / y.rolling(self.n).std()
-        v = (y - y.mean()) / y.std()
+        self.min = y.min()
+        self.max = y.max()
+        v = (y - self.min) / (self.max - self.min)
         return v.rename('v')
 
-    def inv(self, v, y0, idx):
-        raise NotImplementedError()
+    def inv(self, v, y0=None, idx=None):
+        return v * (self.max - self.min) +  self.min
+
+
+
+
+
+class standardize(_GeneralTransform):
+    """
+    v_t = \dfrac{y_t-\bar{y}_{t-n..t}}{\sigma_{t-n..t}}
+    """
+
+    def __init__(self, n=None):
+        self.n = 1
+
+    def __call__(self, y, *args, **kwargs):
+        if isinstance(y, pd.DataFrame):
+            y = y.squeeze()
+        self.y0 = y.iloc[:self.n].values.tolist()
+        self.idx = y.index
+        self.mean = y.mean()
+        self.std = y.std()
+        v = (y - self.mean) / self.std
+        return v.rename('v')
+
+    def inv(self, v, y0=None, idx=None):
+        return v * self.std + self.mean
+
 
 
 class identical(_GeneralTransform):

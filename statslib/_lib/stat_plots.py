@@ -2,6 +2,7 @@ import matplotlib.pyplot as _plt
 import statsmodels.api as _sm
 
 def plot_qq_plot(s, figsize=(7, 9), **kwargs):
+    s = s.dropna()
     fig, ax = _plt.subplots(figsize=figsize)
     _sm.graphics.qqplot(s, line='q', fit=True, ax=ax, **kwargs)
     ax.set_title('Normal QQ Plot')
@@ -10,6 +11,7 @@ def plot_qq_plot(s, figsize=(7, 9), **kwargs):
 
 
 def plot_acf_pcf(s, figsize=(9 * 1.6, 9), kwargs_acf={}, kwargs_pacf={}):
+    s = s.dropna()
     fig = _plt.figure(figsize=figsize)
     ax1 = fig.add_subplot(211)
     fig = _sm.graphics.tsa.plot_acf(s, lags=kwargs_acf.pop('lags', 30), ax=ax1, **kwargs_acf)

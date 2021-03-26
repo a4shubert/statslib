@@ -3,13 +3,14 @@ import statsmodels.api as sm
 import math
 from itertools import product
 import matplotlib.pyplot as plt
-
-from IPython.display import display
+from copy import deepcopy
 
 
 class DesignMatrix:
     def __init__(self, y=None, X=None, f=None, gs=None, add_const=True):
-
+        y = deepcopy(y)
+        X = deepcopy(X)
+        gs = deepcopy(gs)
         self.f = None
         self.names = dict()
         self.exog_name = None
@@ -37,7 +38,7 @@ class DesignMatrix:
 
         if X is not None:
             if gs is None:
-                self.gs = [lambda s: s] * len(X.columns)
+                self.gs = [identical()] * len(X.columns)
             else:
                 self.gs = gs
             self.endog_names = X.columns.tolist()
@@ -47,7 +48,10 @@ class DesignMatrix:
             if add_const:
                 self.names.update({'const': 'const'})
             self._inv_names = {v: k for k, v in self.names.items()}
-            self.gX = X.agg(dict(zip(X.columns.tolist(), self.gs)))
+            if isinstance(gs, dict):
+                self.gX = X.agg(gs)
+            else:
+                self.gX = X.agg(dict(zip(X.columns.tolist(), self.gs)))
             if add_const:
                 self.gX = sm.tools.tools.add_constant(self.gX)
             self.gX.rename(columns=self._inv_names, inplace=True)
@@ -83,7 +87,7 @@ class DesignMatrix:
 
         res_df = pd.concat(lst, axis=1)
         if res_df.T.shape[0] == 1:
-            res_df.T.plot(figsize=figsize, kind='bar')
+            res_df.drop('count', axis=0).T.plot(figsize=figsize, kind='bar')
         else:
             res_df.drop('count', axis=0).T.plot(figsize=figsize)
         return res_df
@@ -123,11 +127,14 @@ class DesignMatrix:
         plt.tight_layout()
         plt.show()
 
-    def plot(self):
+    def plot(self, drop_names=None):
+        if drop_names is None:
+            drop_names = list()
         from statslib.utils.common import flatten_lst
         from statslib.utils.plots import plot_to_grid
-        mask = flatten_lst([[v, k] for k, v in self.names.items() if k != 'const'])
-        plot_to_grid(self.dm_ext[mask], plots_per_row=2, title='Design Matrix')
+        mask = flatten_lst([[v, k] for k, v in self.names.items() if k != 'const' and v not in drop_names] )
+        plot_to_grid(self.dm_ext[mask], plots_per_row=2, title='')
+
 
     def plot_covariate_vs_lag(self, covariate_name, up_to_lag):
         h = up_to_lag
