@@ -155,3 +155,9 @@ class DesignMatrix:
         X_lagged = lagged_df.drop([covariate_name], axis=1)
         DM_lagged = DesignMatrix(y_lagged, X=X_lagged)
         DM_lagged.plot_scatter_lowess(lowess_dict=dict())
+
+    def g_to_x(self, l):
+        return list(map(self.names.get, l))
+
+    def x_to_g(self, l):
+        return list(map(self._inv_names.get, l))
