@@ -1,16 +1,19 @@
 import inspect
-from statslib._lib.gcalib import CalibType
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as _plt
-import statsmodels.api as _sm
 import math as _math
+from copy import deepcopy
+
+import matplotlib.pyplot as _plt
+import numpy as np
+import pandas as pd
+import statsmodels.api as _sm
+
+from statslib._lib.gcalib import CalibType
 
 
 class GeneralModel:
     def __init__(self, gc, DM):
-        self.gc = gc
-        self.DM = DM
+        self.gc = deepcopy(gc)
+        self.DM = deepcopy(DM)
         self.calibrator = None
         self.fitted = None
         self.v_hat = None
@@ -69,7 +72,9 @@ class GeneralModel:
         except Exception:
             pass
 
-    def plot_diagnostics(self, figsize=(15, 15)):
+    def plot_diagnostics(self, figsize=(15, 15), drop_names=None):
+        if drop_names is None:
+            drop_names = list()
         std_resid = self.std_residuals
         if std_resid is not None:
             fig, axs = _plt.subplots(3, 2, figsize=figsize)
@@ -110,19 +115,23 @@ class GeneralModel:
 
             _plt.tight_layout()
             _plt.show()
-
+            print(" ")
             L = 2
-            K = _math.ceil(len(self.DM.endog_names) / L)
+            K = _math.ceil(len([k for k in self.DM.endog_names if k not in drop_names]) / L)
             i = j = 0
             fig, axs = _plt.subplots(K, L, figsize=(15, 15))
             for curve in self.DM.endog_names:
-                axs[i, j].scatter(self.DM.dm_ext[curve].iloc[self.forecast_index].values.tolist(), self.std_residuals.values)
-                axs[i, j].set_xlabel(curve)
-                axs[i, j].set_ylabel('std_res')
-                j += 1
-                if j % L == 0:
-                    i += 1
-                    j = 0
-            _plt.suptitle('Standardized Residuals vs. Explanatory Variable', size=19)
-            _plt.tight_layout()
+                if curve not in drop_names:
+                    x_vals = self.DM.dm_ext[curve].iloc[self.forecast_index].values.tolist()
+
+                    axs[i, j].scatter(x_vals, self.std_residuals.values)
+                    axs[i, j].hlines(0, min(x_vals), max(x_vals))
+                    axs[i, j].set_xlabel(curve)
+                    axs[i, j].set_ylabel('std_res')
+                    j += 1
+                    if j % L == 0:
+                        i += 1
+                        j = 0
+            _plt.suptitle('Standardized Residuals vs. Explanatory Variable')
+            _plt.tight_layout(pad=3)
             _plt.show()

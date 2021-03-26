@@ -3,13 +3,14 @@ import statsmodels.api as sm
 import math
 from itertools import product
 import matplotlib.pyplot as plt
-
-from IPython.display import display
+from copy import deepcopy
 
 
 class DesignMatrix:
     def __init__(self, y=None, X=None, f=None, gs=None, add_const=True):
-
+        y = deepcopy(y)
+        X = deepcopy(X)
+        gs = deepcopy(gs)
         self.f = None
         self.names = dict()
         self.exog_name = None
@@ -126,11 +127,14 @@ class DesignMatrix:
         plt.tight_layout()
         plt.show()
 
-    def plot(self):
+    def plot(self, drop_names=None):
+        if drop_names is None:
+            drop_names = list()
         from statslib.utils.common import flatten_lst
         from statslib.utils.plots import plot_to_grid
-        mask = flatten_lst([[v, k] for k, v in self.names.items() if k != 'const'])
-        plot_to_grid(self.dm_ext[mask], plots_per_row=2, title='Design Matrix')
+        mask = flatten_lst([[v, k] for k, v in self.names.items() if k != 'const' and v not in drop_names] )
+        plot_to_grid(self.dm_ext[mask], plots_per_row=2, title='')
+
 
     def plot_covariate_vs_lag(self, covariate_name, up_to_lag):
         h = up_to_lag
