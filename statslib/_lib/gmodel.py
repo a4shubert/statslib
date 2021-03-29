@@ -117,10 +117,10 @@ class GeneralModel:
             _plt.show()
             print(" ")
             L = 2
-            K = _math.ceil(len([k for k in self.DM.endog_names if k not in drop_names]) / L)
+            K = _math.ceil(len([k for k in self.DM.exog_names if k not in drop_names]) / L)
             i = j = 0
             fig, axs = _plt.subplots(K, L, figsize=(15, 15))
-            for curve in self.DM.endog_names:
+            for curve in self.DM.exog_names:
                 if curve not in drop_names:
                     x_vals = self.DM.dm_ext[curve].iloc[self.forecast_index].values.tolist()
 

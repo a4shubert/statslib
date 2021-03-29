@@ -13,8 +13,8 @@ class DesignMatrix:
         gs = deepcopy(gs)
         self.f = None
         self.names = dict()
-        self.exog_name = None
-        self.endog_names = None
+        self.endog_name = None
+        self.exog_names = None
         self._n_y = None
         self._n_x = None
         self.n = None
@@ -27,10 +27,10 @@ class DesignMatrix:
                 from statslib._lib.transforms import identical
                 self.f = identical()
             else:
-                self.f = f
+                self.f = deepcopy(f)
             if isinstance(y, pd.DataFrame):
                 y = y.squeeze()
-            self.exog_name = y.name
+            self.endog_name = y.name
             self.y = y
             self.v = self.f(y).rename('v')
             self.names.update({'v': y.name})
@@ -41,7 +41,7 @@ class DesignMatrix:
                 self.gs = [identical()] * len(X.columns)
             else:
                 self.gs = gs
-            self.endog_names = X.columns.tolist()
+            self.exog_names = X.columns.tolist()
             self.X = X
             self._n_x = len(self.X)
             self.names.update(dict(zip([f'g{i}' for i in range(1, len(X.columns) + 1)], X.columns.tolist())))
@@ -57,7 +57,7 @@ class DesignMatrix:
             self.gX.rename(columns=self._inv_names, inplace=True)
 
             if y is not None:
-                self.dm_ext = pd.concat([self.y.rename(self.exog_name), self.v, self.X, self.gX], axis=1)
+                self.dm_ext = pd.concat([self.y.rename(self.endog_name), self.v, self.X, self.gX], axis=1)
                 self.dm = pd.concat([self.y.rename('y'), self.v, self.gX], axis=1).dropna(axis=0)
                 self.gX = self.dm[[name for name in self.names.keys() if name != 'v']]
                 self.gX = self.gX[sorted(self.gX.columns)]
@@ -80,10 +80,10 @@ class DesignMatrix:
         self.dm.index.name = 't'
 
     def describe(self, figsize=(8 * 1.6, 8)):
-        if self.endog_names:
-            lst = [self.dm_ext[self.exog_name].describe()] + [self.dm_ext[c].describe() for c in self.endog_names]
+        if self.exog_names:
+            lst = [self.dm_ext[self.endog_name].describe()] + [self.dm_ext[c].describe() for c in self.exog_names]
         else:
-            lst = [self.dm_ext[self.exog_name].describe()]
+            lst = [self.dm_ext[self.endog_name].describe()]
 
         res_df = pd.concat(lst, axis=1)
         if res_df.T.shape[0] == 1:
@@ -97,16 +97,19 @@ class DesignMatrix:
         results = decompose_seasonal_stl(self.y, **kwargs)
         return results
 
-    def plot_scatter_lowess(self, lowess_dict=None):
+    def plot_scatter_lowess(self, lowess_dict=None, drop_names=None):
         if lowess_dict is None:
             lowess_dict = dict()
-        combinations = list(product([self.exog_name], self.endog_names))
+        if drop_names is None:
+            drop_names = list()
+        exog_names = [k for k in self.exog_names if k not in drop_names]
+        combinations = list(product([self.endog_name], exog_names))
         L = 2
         K = math.ceil(len(combinations) / L)
         i = j = 0
         if K == 1:
             K += 1
-        mask = [self.exog_name] + self.endog_names
+        mask = [self.endog_name] + exog_names
         df = self.dm_ext[mask]
         fig, axs = plt.subplots(K, L, figsize=(15, 15))
         for combination in combinations:
@@ -135,7 +138,6 @@ class DesignMatrix:
         mask = flatten_lst([[v, k] for k, v in self.names.items() if k != 'const' and v not in drop_names] )
         plot_to_grid(self.dm_ext[mask], plots_per_row=2, title='')
 
-
     def plot_covariate_vs_lag(self, covariate_name, up_to_lag):
         h = up_to_lag
         cov_df = self.dm_ext[covariate_name].dropna()
@@ -151,7 +153,7 @@ class DesignMatrix:
         cov_df = self.dm_ext[covariate_name].dropna()
         lagged_df = pd.concat([cov_df] + [cov_df.shift(i).rename(f'Lag{i}_{covariate_name}') for i in range(1, h + 1)],
                               axis=1).dropna()
-        y_lagged = self.y.rename(self.exog_name)
+        y_lagged = self.y.rename(self.endog_name)
         X_lagged = lagged_df.drop([covariate_name], axis=1)
         DM_lagged = DesignMatrix(y_lagged, X=X_lagged)
         DM_lagged.plot_scatter_lowess(lowess_dict=dict())

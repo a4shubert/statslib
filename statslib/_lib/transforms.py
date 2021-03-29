@@ -141,6 +141,7 @@ class min_max(_GeneralTransform):
     """
     v_t = \dfrac{y-y.min()}{y.max()-y.min()}
     """
+
     def __init__(self, n=None):
         self.n = 1
 
@@ -155,10 +156,7 @@ class min_max(_GeneralTransform):
         return v.rename('v')
 
     def inv(self, v, y0=None, idx=None):
-        return v * (self.max - self.min) +  self.min
-
-
-
+        return v * (self.max - self.min) + self.min
 
 
 class standardize(_GeneralTransform):
@@ -183,11 +181,11 @@ class standardize(_GeneralTransform):
         return v * self.std + self.mean
 
 
-
 class identical(_GeneralTransform):
     """
     v_t = y_t
     """
+
     def __init__(self):
         self.n = 1
 
@@ -198,3 +196,36 @@ class identical(_GeneralTransform):
 
     def inv(self, v, y0, idx):
         return v
+
+
+class log(_GeneralTransform):
+    """
+    v_t = log(y_t)
+    """
+
+    def __init__(self):
+        self.n = 1
+
+    def __call__(self, y, *args, **kwargs):
+        if isinstance(y, pd.DataFrame):
+            y = y.squeeze()
+        return _np.log(y).rename('v')
+
+    def inv(selfs, v, y0=None, idx=None):
+        return _np.exp(v)
+
+class power(_GeneralTransform):
+    """
+    v_t = y_t ^ alpha
+    """
+    def __init__(self, alpha):
+        self.n = 1
+        self.alpha = alpha
+
+    def __call__(self, y, *args, **kwargs):
+        if isinstance(y, pd.DataFrame):
+            y = y.squeeze()
+        return pow(y, self.alpha).rename('v')
+
+    def inv(self, v, y0=None, idx=None):
+        return pow(v, 1.0/self.alpha)
