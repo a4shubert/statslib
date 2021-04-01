@@ -194,7 +194,7 @@ class identical(_GeneralTransform):
             y = y.squeeze()
         return y.rename('v')
 
-    def inv(self, v, y0, idx):
+    def inv(self, v, y0=None, idx=None):
         return v
 
 

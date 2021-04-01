@@ -92,9 +92,10 @@ class Acquirer(object):
                     del _temp_df
                     gc.collect()
         else:
-            raise NotImplementedError(
-                "The file extension `{}` hasn't been yet implemented!".format(
-                    extension))
+            # raise NotImplementedError(
+            #     "The file extension `{}` hasn't been yet implemented!".format(
+            #         extension))
+            pass
 
         if isinstance(result_df, pd.Series):
             result_df = result_df.to_frame()

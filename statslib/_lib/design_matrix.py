@@ -1,9 +1,10 @@
+import math
+from copy import deepcopy
+from itertools import product
+
+import matplotlib.pyplot as plt
 import pandas as pd
 import statsmodels.api as sm
-import math
-from itertools import product
-import matplotlib.pyplot as plt
-from copy import deepcopy
 
 
 class DesignMatrix:
@@ -97,7 +98,7 @@ class DesignMatrix:
         results = decompose_seasonal_stl(self.y, **kwargs)
         return results
 
-    def plot_scatter_lowess(self, lowess_dict=None, drop_names=None):
+    def plot_scatter_lowess(self, lowess_dict=None, drop_names=None, g_form=False):
         if lowess_dict is None:
             lowess_dict = dict()
         if drop_names is None:
@@ -110,13 +111,18 @@ class DesignMatrix:
         if K == 1:
             K += 1
         mask = [self.endog_name] + exog_names
-        df = self.dm_ext[mask]
+        if g_form:
+            df = self.dm_ext[self.x_to_g(mask)]
+        else:
+            df = self.dm_ext[mask]
         fig, axs = plt.subplots(K, L, figsize=(15, 15))
         for combination in combinations:
             combination = list(combination)
+            if g_form:
+                combination = self.x_to_g(combination)
             df_combo = df[combination]
-            x = df_combo.iloc[:, 0].values
-            y = df_combo.iloc[:, 1].values
+            x = df_combo.iloc[:, 1].values
+            y = df_combo.iloc[:, 0].values
             axs[i, j].scatter(x, y, color='#8EBA42')
             pd.DataFrame(sm.nonparametric.lowess(y, x, **lowess_dict), columns=['x', 'y']).set_index('x').plot(
                 ax=axs[i, j])
@@ -135,7 +141,7 @@ class DesignMatrix:
             drop_names = list()
         from statslib.utils.common import flatten_lst
         from statslib.utils.plots import plot_to_grid
-        mask = flatten_lst([[v, k] for k, v in self.names.items() if k != 'const' and v not in drop_names] )
+        mask = flatten_lst([[v, k] for k, v in self.names.items() if k != 'const' and v not in drop_names])
         plot_to_grid(self.dm_ext[mask], plots_per_row=2, title='')
 
     def plot_covariate_vs_lag(self, covariate_name, up_to_lag):
@@ -159,7 +165,12 @@ class DesignMatrix:
         DM_lagged.plot_scatter_lowess(lowess_dict=dict())
 
     def g_to_x(self, l):
-        return list(map(self.names.get, l))
+        if len(set(l).intersection((self.names.values()))) > 1:
+            return l
+        else:
+            return list(map(self.names.get, l))
 
     def x_to_g(self, l):
+        if len(set(l).intersection(self._inv_names.values())) > 1:
+            return l
         return list(map(self._inv_names.get, l))
