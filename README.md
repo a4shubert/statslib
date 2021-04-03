@@ -27,7 +27,7 @@ Please see the following exemplar jupyter notebooks:
     * [SARIMAX](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/TS_SARIMAX.ipynb)
     * [Support Vector Regression (kernel)]    
     * [Neural Network Autoregression]
-    * [Long Short-Term Memory Recurrent Neural Network](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/TS_LSTM_RNN_Keras.ipynb)
+    * [Deep Learning with Tensor Flow]()
   
     
 * Classification:
@@ -41,7 +41,7 @@ Please see the following exemplar jupyter notebooks:
 
 * Deep Learning:
     * [Convolution Neural Network]
-    * [Recurrent Neural Network](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/TS_LSTM_RNN_Keras.ipynb)  
+    * [Recurrent Neural Network]  
     * [Transfer Learning]
     * [VGG Visual Geometry Group Network]
     * [Residual Networks]

@@ -47,21 +47,15 @@ def display_full_df(df):
     pd.reset_option('display.max_colwidth')
 
 
-
-import pandas as pd
-from IPython import display
-import matplotlib.pyplot as plt
-import math
-
-
-
-
 def df_see_null_na_values(df):
     if isinstance(df, pd.Series):
         df = df.to_frame()
     from IPython.display import display
-    display(df[df.isnull().any(axis=1)])
-    display(df[df.isna().any(axis=1)])
+    print('Displaying up to 2 #N/A rows. Please use returned NA index.')
+    print('\nisnull:')
+    display(df[df.isnull().any(axis=1)].head(2))
+    print('\nisna:')
+    display(df[df.isna().any(axis=1)].head(2))
     return df[df.isnull().any(axis=1)].index
 
 

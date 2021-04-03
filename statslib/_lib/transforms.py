@@ -214,10 +214,12 @@ class log(_GeneralTransform):
     def inv(selfs, v, y0=None, idx=None):
         return _np.exp(v)
 
+
 class power(_GeneralTransform):
     """
     v_t = y_t ^ alpha
     """
+
     def __init__(self, alpha):
         self.n = 1
         self.alpha = alpha
@@ -228,4 +230,4 @@ class power(_GeneralTransform):
         return pow(y, self.alpha).rename('v')
 
     def inv(self, v, y0=None, idx=None):
-        return pow(v, 1.0/self.alpha)
+        return pow(v, 1.0 / self.alpha)

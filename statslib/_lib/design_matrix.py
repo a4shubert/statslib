@@ -6,9 +6,13 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import statsmodels.api as sm
 
+from statslib.utils.common import to_namedtuple
+
 
 class DesignMatrix:
     def __init__(self, y=None, X=None, f=None, gs=None, add_const=True):
+        from statslib._lib.transforms import identical
+
         y = deepcopy(y)
         X = deepcopy(X)
         gs = deepcopy(gs)
@@ -25,7 +29,7 @@ class DesignMatrix:
 
         if y is not None:
             if f is None:
-                from statslib._lib.transforms import identical
+
                 self.f = identical()
             else:
                 self.f = deepcopy(f)
@@ -79,18 +83,26 @@ class DesignMatrix:
             self.n = self._n_y if self._n_y is not None else self._n_x
         self.dm_ext.index.name = 't'
         self.dm.index.name = 't'
+        self.names_tpl = to_namedtuple(self.names, True)
 
     def describe(self, figsize=(8 * 1.6, 8)):
         if self.exog_names:
-            lst = [self.dm_ext[self.endog_name].describe()] + [self.dm_ext[c].describe() for c in self.exog_names]
+            if self.endog_name:
+                lst = [self.dm_ext[self.endog_name].describe()] + [self.dm_ext[c].describe() for c in self.exog_names]
+            else:
+                lst = [self.dm_ext[c].describe() for c in self.exog_names]
         else:
             lst = [self.dm_ext[self.endog_name].describe()]
-
         res_df = pd.concat(lst, axis=1)
         if res_df.T.shape[0] == 1:
-            res_df.drop('count', axis=0).T.plot(figsize=figsize, kind='bar')
+            fig, ax = plt.subplots(figsize=figsize)
+            res_df.drop('count', axis=0).T.plot(kind='bar', ax=ax)
         else:
-            res_df.drop('count', axis=0).T.plot(figsize=figsize)
+            fig, ax = plt.subplots(figsize=figsize)
+            plot_df = res_df.drop('count', axis=0).T.reindex()
+            plot_df.plot(ax=ax)
+            plt.xticks(range(0, len(plot_df.index)), plot_df.index)
+            ax.tick_params(axis='x', rotation=45)
         return res_df
 
     def seasonal_decompose(self, **kwargs):
@@ -136,13 +148,20 @@ class DesignMatrix:
         plt.tight_layout()
         plt.show()
 
-    def plot(self, drop_names=None):
+    def plot(self, only_names=None, drop_names=None, **kwargs):
         if drop_names is None:
             drop_names = list()
+        else:
+            drop_names = self.g_to_x(drop_names)
+        if only_names is None:
+            only_names = self.names.values()
+        else:
+            only_names = self.g_to_x(only_names)
         from statslib.utils.common import flatten_lst
         from statslib.utils.plots import plot_to_grid
-        mask = flatten_lst([[v, k] for k, v in self.names.items() if k != 'const' and v not in drop_names])
-        plot_to_grid(self.dm_ext[mask], plots_per_row=2, title='')
+        mask = flatten_lst(
+            [[v, k] for k, v in self.names.items() if k != 'const' and v not in drop_names and v in only_names])
+        plot_to_grid(self.dm_ext[mask], plots_per_row=2, title='', **kwargs)
 
     def plot_covariate_vs_lag(self, covariate_name, up_to_lag):
         h = up_to_lag
