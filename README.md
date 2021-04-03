@@ -12,42 +12,43 @@ I'm developing a lightweight Python library for rapid statistical and ML modelli
 
 Please see the following exemplar jupyter notebooks:
 * StatsLib:
-    * [Demo]()
-    * [Framework]()
+    * [Demo](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/LIB_Demo.ipynb)
+    * [Framework](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/LIB_Framework.ipynb)
       
 
 * Cross-Sectional:
-   * [Associations]()
-   * [Linear Model]()
-   * [Logistic Model]()
+   * [Associations]
+   * [Linear Model](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/CS_Linear%20Model.ipynb)
+   * [Logistic Model]
   
     
 * Time-Series:
-    * [Linear Model]()
-    * [SARIMAX]()
-    * [Support Vector Regression (kernel)]()    
-    * [Neural Network Autoregression]()
-    * [Long Short-Term Memory Recurrent Neural Network]()
+    * [Linear Model](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/TS_Linear%20Model.ipynb)
+    * [SARIMAX](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/TS_SARIMAX.ipynb)
+    * [Support Vector Regression (kernel)]    
+    * [Neural Network Autoregression]
+    * [Long Short-Term Memory Recurrent Neural Network](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/TS_LSTM_RNN_Keras.ipynb)
   
     
 * Classification:
-    * [Decision Tree]()
-    * [Random Forest]()
+    * [Decision Tree]
+    * [Random Forest]
       
 
 * Clustering:
-    * [K-means]()
+    * [K-means]
   
 
 * Deep Learning:
-    * [Convolution Neural Network]()
-    * [Transfer Learning]()
-    * [VGG Visual Geometry Group Network]()
-    * [Residual Networks]()
-    * [Inception Networks]()
+    * [Convolution Neural Network]
+    * [Recurrent Neural Network](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/TS_LSTM_RNN_Keras.ipynb)  
+    * [Transfer Learning]
+    * [VGG Visual Geometry Group Network]
+    * [Residual Networks]
+    * [Inception Networks]
     * Generative Models:
-        * [Variational Autoencoders]()
-        * [Generative Adversarial Networks]()
+        * [Variational Autoencoders]
+        * [Generative Adversarial Networks]
     
     
 Please see [html]() folder for HTML copies of jupyter notebooks.
