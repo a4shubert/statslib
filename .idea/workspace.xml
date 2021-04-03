@@ -2,9 +2,21 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="83fd089a-1307-437e-b038-75f12d107336" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/jupyter/CS_Linear Model.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jupyter/LIB_Demo.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jupyter/LIB_Framework.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jupyter/TS_LSTM_RNN_Keras.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jupyter/TS_Linear Model.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jupyter/TS_SARIMAX.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/jupyter/Linear Model.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/jupyter/Linear Model.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/jupyter/Statslib_Demo.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/jupyter/Statslib_Demo.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jupyter/ARIMAX.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/jupyter/Cross Sectional Linear Model.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/jupyter/Modelling_Framework.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/jupyter/Statslib_Demo.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/jupyter/Time Series Linear Model.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/stpb.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/stpb.pptx" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,6 +44,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
@@ -98,5 +111,9 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
 </project>
