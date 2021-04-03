@@ -25,9 +25,9 @@ Please see the following exemplar jupyter notebooks:
 * Time-Series:
     * [Linear Model](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/TS_Linear%20Model.ipynb)
     * [SARIMAX](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/TS_SARIMAX.ipynb)
-    * [Support Vector Regression (kernel)]    
+    * [Support Vector (kernel) Regression]    
     * [Neural Network Autoregression]
-    * [Deep Learning with Tensor Flow]()
+    * [Deep Learning with TensorFlow](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/TS_NN_TensorFlow.ipynb)
   
     
 * Classification:
@@ -43,7 +43,7 @@ Please see the following exemplar jupyter notebooks:
     * [Convolution Neural Network]
     * [Recurrent Neural Network]  
     * [Transfer Learning]
-    * [VGG Visual Geometry Group Network]
+    * [VGG (Visual Geometry Group) Network]
     * [Residual Networks]
     * [Inception Networks]
     * Generative Models:

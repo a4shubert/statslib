@@ -2,18 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="83fd089a-1307-437e-b038-75f12d107336" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/jupyter/TS_NN_TensorFlow.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/statslib_pub.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/statslib_pub.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/jupyter/TS_LSTM_RNN_Keras.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sandbox/LSTM_RNN_KERAS_TUTORIAL-Copy1.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/sandbox/LSTM_RNN_KERAS_TUTORIAL-Copy1.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sandbox/STPB_PYTORCH_TUTORIAL.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/sandbox/STPB_PYTORCH_TUTORIAL.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/statslib/_lib/design_matrix.py" beforeDir="false" afterPath="$PROJECT_DIR$/statslib/_lib/design_matrix.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/statslib/_lib/transforms.py" beforeDir="false" afterPath="$PROJECT_DIR$/statslib/_lib/transforms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/statslib/utils/dframe.py" beforeDir="false" afterPath="$PROJECT_DIR$/statslib/utils/dframe.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/statslib/utils/plots.py" beforeDir="false" afterPath="$PROJECT_DIR$/statslib/utils/plots.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
