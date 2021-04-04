@@ -14,7 +14,7 @@ Please see the following exemplar jupyter notebooks:
 * StatsLib:
     * [Demo](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/LIB_Demo.ipynb)
     * [Framework](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/LIB_Framework.ipynb)
-    * [SmartData]()
+    * [SmartData]
       
 
 * Cross-Sectional Modelling:
