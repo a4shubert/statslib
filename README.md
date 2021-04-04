@@ -14,15 +14,16 @@ Please see the following exemplar jupyter notebooks:
 * StatsLib:
     * [Demo](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/LIB_Demo.ipynb)
     * [Framework](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/LIB_Framework.ipynb)
+    * [SmartData]()
       
 
-* Cross-Sectional:
+* Cross-Sectional Modelling:
    * [Associations]
    * [Linear Model](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/CS_Linear%20Model.ipynb)
    * [Logistic Model]
   
     
-* Time-Series:
+* Time-Series Modelling:
     * [Linear Model](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/TS_Linear%20Model.ipynb)
     * [SARIMAX](https://nbviewer.jupyter.org/github/ashubertt/statslib/blob/main/jupyter/TS_SARIMAX.ipynb)
     * [Support Vector (kernel) Regression]    
@@ -51,7 +52,7 @@ Please see the following exemplar jupyter notebooks:
         * [Generative Adversarial Networks]
     
     
-Please see [html]() folder for HTML copies of jupyter notebooks.
+Please see [html](https://github.com/ashubertt/statslib/tree/main/jupyter/html) folder for HTML copies of jupyter notebooks.
 
 ***
 
