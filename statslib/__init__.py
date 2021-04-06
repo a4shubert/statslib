@@ -3,7 +3,7 @@ __import__('pkg_resources').declare_namespace(__name__)
 
 
 from statslib._lib.cross_validation import CrossValidation
-from statslib._lib.design_matrix import DesignMatrix
+from statslib._lib.design_matrix import DesignMatrix, WindowGenerator
 from statslib._lib.gcalib import GeneralCalibrator
 from statslib._lib.gmodel import GeneralModel
 

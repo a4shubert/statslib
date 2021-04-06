@@ -27,10 +27,12 @@ def plot_to_grid(df, columns=None, title='', plots_per_row=3, legend_on_a_side=F
 
 
 
-
-
-
 def get_standard_colors():
     return _plt.rcParams['axes.prop_cycle'].by_key()['color']
 
 
+
+def color():
+    import itertools
+    itr = itertools.cycle(get_standard_colors())
+    return itr
