@@ -197,7 +197,7 @@ class DesignMatrix:
         return list(map(self._inv_names.get, l))
 
 
-class WindowGenerator():
+class WindowGenerator:
     def __init__(self, input_width, label_width, shift, train_df, val_df, test_df, label_columns=None):
         # Store the raw dat
         self.train_df = train_df
@@ -284,7 +284,7 @@ class WindowGenerator():
             self._example = result
         return result
 
-    def plot(self, model=None, plot_col='v', max_subplots=3):
+    def plot(self, plot_col=None, model=None, max_subplots=3):
         inputs, labels = self.example
         plt.figure(figsize=(12, 8))
         plot_col_index = self.column_indices[plot_col]

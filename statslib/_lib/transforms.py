@@ -164,7 +164,9 @@ class standardize(_GeneralTransform):
     v_t = \dfrac{y_t-\bar{y}_{t-n..t}}{\sigma_{t-n..t}}
     """
 
-    def __init__(self, n=None):
+    def __init__(self, n=None, mean=None, sigma=None):
+        self.mean = mean
+        self.sigma = sigma
         self.n = 1
 
     def __call__(self, y, *args, **kwargs):
@@ -172,8 +174,11 @@ class standardize(_GeneralTransform):
             y = y.squeeze()
         self.y0 = y.iloc[:self.n].values.tolist()
         self.idx = y.index
-        self.mean = y.mean()
-        self.std = y.std()
+        if self.mean is None:
+            self.mean = y.mean()
+
+        if self.sigma is None:
+            self.std = y.std()
         v = (y - self.mean) / self.std
         return v.rename('v')
 
