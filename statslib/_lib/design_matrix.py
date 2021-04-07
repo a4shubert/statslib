@@ -305,14 +305,18 @@ class WindowGenerator:
 
             plt.scatter(self.label_indices, labels[n, :, label_col_index],
                         edgecolors='k', label='Labels', c='#2ca02c', s=64)
+
+
+            from statslib.utils.common import flatten_lst as fl
             if model is not None:
-                predictions = model(inputs)
-                plt.scatter(self.label_indices, predictions[n, :, label_col_index],
+                predictions = model.predict(inputs)
+                print(predictions)
+                plt.scatter(self.label_indices, fl(predictions),
                           marker='X', edgecolors='k', label='Predictions',
                           c='#ff7f0e', s=64)
 
-            if n == 0:
-                plt.legend()
+            # if n == 0:
+            #     plt.legend()
 
             plt.xlabel('Time')
 
