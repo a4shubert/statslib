@@ -284,7 +284,7 @@ class WindowGenerator:
             self._example = result
         return result
 
-    def plot(self, plot_col=None, model=None, max_subplots=3):
+    def plot(self, plot_col=None, model=None, max_subplots=3, feedback=False):
         inputs, labels = self.example
         plt.figure(figsize=(12, 8))
         plot_col_index = self.column_indices[plot_col]
@@ -310,19 +310,30 @@ class WindowGenerator:
             from statslib.utils.common import flatten_lst as fl
             if model is not None:
                 predictions = model.predict(inputs)
-                if len(self.example)>1:
-                    predictions = predictions[n,:]
-                else:
+
+                if len(self.example)<1:
                     predictions = fl(predictions)
-                plt.scatter(self.label_indices, predictions,
-                          marker='X', edgecolors='k', label='Predictions',
-                          c='#ff7f0e', s=64)
+
+                    plt.scatter(self.label_indices, predictions,
+                                marker='X', edgecolors='k', label='Predictions',
+                                c='#ff7f0e', s=64)
+                else:
+                    if feedback:
+                        predictions = tf.transpose(predictions, [0,2,1])
+                        predictions = predictions[n,0,:]
+
+                    else:
+                        predictions = predictions[n, :]
+                    plt.scatter(self.label_indices, predictions,
+                                marker='X', edgecolors='k', label='Predictions',
+                                c='#ff7f0e', s=64)
+            
 
             # if n == 0:
             #     plt.legend()
 
             plt.xlabel('Time')
-        
+
 
     @property
     def train(self):
