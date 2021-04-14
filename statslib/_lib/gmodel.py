@@ -51,8 +51,8 @@ class GeneralModel:
 
         if 'start' in inspect.signature(self.fitted.predict).parameters:
             self.v_hat = self.fitted.predict(
-                self.endog(idx).index.min(),
-                self.endog(idx).index.max(),
+                self.exog(idx).index.min(),
+                self.exog(idx).index.max(),
                 exog=self.exog(idx))
         else:
             if self.gc.calib_type is CalibType.sm:
