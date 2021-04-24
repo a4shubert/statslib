@@ -60,7 +60,7 @@ class DesignMatrix:
             else:
                 self.gX = X.agg(dict(zip(X.columns.tolist(), self.gs)))
             if add_const:
-                self.gX = sm.tools.tools.add_constant(self.gX)
+                self.gX['const'] = 1.0
             self.gX.rename(columns=self._inv_names, inplace=True)
 
             if y is not None:
@@ -151,6 +151,7 @@ class DesignMatrix:
         plt.show()
 
     def plot(self, only_names=None, drop_names=None, **kwargs):
+
         if drop_names is None:
             drop_names = list()
         else:
@@ -158,11 +159,13 @@ class DesignMatrix:
         if only_names is None:
             only_names = self.names.values()
         else:
+            drop_names = list()
             only_names = self.g_to_x(only_names)
         from statslib.utils.common import flatten_lst
         from statslib.utils.plots import plot_to_grid
         mask = flatten_lst(
-            [[v, k] for k, v in self.names.items() if k != 'const' and v not in drop_names and v in only_names])
+            [[v] for k, v in self.names.items() if k != 'const' and v not in drop_names and v in only_names])
+
         plot_to_grid(self.dm_ext[mask], plots_per_row=2, title='', **kwargs)
 
     def plot_covariate_vs_lag(self, covariate_name, up_to_lag):
