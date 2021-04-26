@@ -31,7 +31,6 @@ class DesignMatrix:
 
         if y is not None:
             if f is None:
-
                 self.f = identical()
             else:
                 self.f = deepcopy(f)
@@ -80,21 +79,25 @@ class DesignMatrix:
             self.gX = None
         if self._n_x is not None and self._n_y is not None and self._n_x != self._n_y:
             print('WARNING: y and X dimensions are not the same!')
-            self.n = self.dm.shape[0]
-        else:
-            self.n = self._n_y if self._n_y is not None else self._n_x
+        self.n = self.dm.shape[0]
         self.dm_ext.index.name = 't'
         self.dm.index.name = 't'
         self.names_tpl = to_namedtuple(self.names, True)
 
-    def describe(self, figsize=(8 * 1.6, 8)):
+    def describe(self, figsize=(8 * 1.6, 8), g_form=False):
+        if g_form:
+            endog_name = self.x_to_g(self.endog_name)
+            exog_names = self.x_to_g(self.exog_names)
+        else:
+            endog_name = self.endog_name
+            exog_names = self.exog_names
         if self.exog_names:
             if self.endog_name:
-                lst = [self.dm_ext[self.endog_name].describe()] + [self.dm_ext[c].describe() for c in self.exog_names]
+                lst = [self.dm_ext[endog_name].describe()] + [self.dm_ext[c].describe() for c in exog_names]
             else:
-                lst = [self.dm_ext[c].describe() for c in self.exog_names]
+                lst = [self.dm_ext[c].describe() for c in exog_names]
         else:
-            lst = [self.dm_ext[self.endog_name].describe()]
+            lst = [self.dm_ext[endog_name].describe()]
         res_df = pd.concat(lst, axis=1)
         if res_df.T.shape[0] == 1:
             fig, ax = plt.subplots(figsize=figsize)
@@ -150,8 +153,7 @@ class DesignMatrix:
         plt.tight_layout()
         plt.show()
 
-    def plot(self, only_names=None, drop_names=None, **kwargs):
-
+    def plot(self, only_names=None, drop_names=None, g_form=False, **kwargs):
         if drop_names is None:
             drop_names = list()
         else:
@@ -163,12 +165,17 @@ class DesignMatrix:
             only_names = self.g_to_x(only_names)
         from statslib.utils.common import flatten_lst
         from statslib.utils.plots import plot_to_grid
-        mask = flatten_lst(
-            [[v] for k, v in self.names.items() if k != 'const' and v not in drop_names and v in only_names])
-
+        if g_form:
+            mask = flatten_lst(
+                [[v]+[k] for k, v in self.names.items() if k != 'const' and v not in drop_names and v in only_names])
+        else:
+            mask = flatten_lst(
+                [[v] for k, v in self.names.items() if k != 'const' and v not in drop_names and v in only_names])
         plot_to_grid(self.dm_ext[mask], plots_per_row=2, title='', **kwargs)
 
-    def plot_covariate_vs_lag(self, covariate_name, up_to_lag):
+    def plot_covariate_vs_lag(self, covariate_name, up_to_lag, g_form=False):
+        if g_form:
+            covariate_name = self.x_to_g([covariate_name])[0]
         h = up_to_lag
         cov_df = self.dm_ext[covariate_name].dropna()
         lagged_df = pd.concat([cov_df] + [cov_df.shift(i).rename(f'Lag{i}_{covariate_name}') for i in range(1, h + 1)],
@@ -178,24 +185,28 @@ class DesignMatrix:
         DM_lagged = DesignMatrix(y_lagged, X=X_lagged)
         DM_lagged.plot_scatter_lowess(lowess_dict=dict())
 
-    def plot_dependent_vs_covariage_lag(self, covariate_name, up_to_lag):
+    def plot_dependent_vs_covariage_lag(self, covariate_name, up_to_lag, g_form=False):
+        if g_form:
+            covariate_name = self.x_to_g([covariate_name])[0]
         h = up_to_lag
         cov_df = self.dm_ext[covariate_name].dropna()
         lagged_df = pd.concat([cov_df] + [cov_df.shift(i).rename(f'Lag{i}_{covariate_name}') for i in range(1, h + 1)],
                               axis=1).dropna()
+
         y_lagged = self.y.rename(self.endog_name)
         X_lagged = lagged_df.drop([covariate_name], axis=1)
-        DM_lagged = DesignMatrix(y_lagged, X=X_lagged)
-        DM_lagged.plot_scatter_lowess(lowess_dict=dict())
+        DM_lagged = DesignMatrix(y_lagged, X=X_lagged,  f=self.f)
+
+        DM_lagged.plot_scatter_lowess(lowess_dict=dict(), g_form=g_form)
 
     def g_to_x(self, l):
-        if len(set(l).intersection((self.names.values()))) > 1:
+        if len(set(l).intersection((self.names.values()))) >= 1:
             return l
         else:
             return list(map(self.names.get, l))
 
     def x_to_g(self, l):
-        if len(set(l).intersection(self._inv_names.values())) > 1:
+        if len(set(l).intersection(self._inv_names.values())) >= 1:
             return l
         return list(map(self._inv_names.get, l))
 
