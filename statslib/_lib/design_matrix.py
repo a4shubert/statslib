@@ -5,6 +5,7 @@ from itertools import product
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sns
 import statsmodels.api as sm
 import tensorflow as tf
 
@@ -77,8 +78,6 @@ class DesignMatrix:
             self.dm_ext = pd.concat([self.y, self.v], axis=1)
             self.dm = self.dm_ext.dropna(axis=0)
             self.gX = None
-        if self._n_x is not None and self._n_y is not None and self._n_x != self._n_y:
-            print('WARNING: y and X dimensions are not the same!')
         self.n = self.dm.shape[0]
         self.dm_ext.index.name = 't'
         self.dm.index.name = 't'
@@ -104,10 +103,10 @@ class DesignMatrix:
             res_df.drop('count', axis=0).T.plot(kind='bar', ax=ax)
         else:
             fig, ax = plt.subplots(figsize=figsize)
-            plot_df = res_df.drop('count', axis=0).T.reindex()
-            plot_df.plot(ax=ax)
-            plt.xticks(range(0, len(plot_df.index)), plot_df.index)
-            ax.tick_params(axis='x', rotation=45)
+            _ = self.dm_ext[[endog_name]+exog_names].melt(var_name=' ', value_name='')
+            sns.violinplot(x=' ', y='', data=_, ax=ax)
+            # plt.xticks(range(0, len(_.index)), _.index)
+            # ax.tick_params(axis='x', rotation=45)
         return res_df
 
     def seasonal_decompose(self, **kwargs):
@@ -145,7 +144,7 @@ class DesignMatrix:
                 ax=axs[i, j])
             axs[i, j].legend(['lowess'])
             axs[i, j].set_ylabel(combination[0])
-            axs[i, j].set_xlabel(combination[1])
+            axs[i, j].set_xlabel(self.g_to_x(combination[1]))
             j += 1
             if j % L == 0:
                 i += 1
@@ -167,7 +166,7 @@ class DesignMatrix:
         from statslib.utils.plots import plot_to_grid
         if g_form:
             mask = flatten_lst(
-                [[v]+[k] for k, v in self.names.items() if k != 'const' and v not in drop_names and v in only_names])
+                [[v] + [k] for k, v in self.names.items() if k != 'const' and v not in drop_names and v in only_names])
         else:
             mask = flatten_lst(
                 [[v] for k, v in self.names.items() if k != 'const' and v not in drop_names and v in only_names])
@@ -175,7 +174,7 @@ class DesignMatrix:
 
     def plot_covariate_vs_lag(self, covariate_name, up_to_lag, g_form=False):
         if g_form:
-            covariate_name = self.x_to_g([covariate_name])[0]
+            covariate_name = self.x_to_g(covariate_name)
         h = up_to_lag
         cov_df = self.dm_ext[covariate_name].dropna()
         lagged_df = pd.concat([cov_df] + [cov_df.shift(i).rename(f'Lag{i}_{covariate_name}') for i in range(1, h + 1)],
@@ -187,7 +186,8 @@ class DesignMatrix:
 
     def plot_dependent_vs_covariage_lag(self, covariate_name, up_to_lag, g_form=False):
         if g_form:
-            covariate_name = self.x_to_g([covariate_name])[0]
+            covariate_name = self.x_to_g(covariate_name)
+
         h = up_to_lag
         cov_df = self.dm_ext[covariate_name].dropna()
         lagged_df = pd.concat([cov_df] + [cov_df.shift(i).rename(f'Lag{i}_{covariate_name}') for i in range(1, h + 1)],
@@ -195,20 +195,31 @@ class DesignMatrix:
 
         y_lagged = self.y.rename(self.endog_name)
         X_lagged = lagged_df.drop([covariate_name], axis=1)
-        DM_lagged = DesignMatrix(y_lagged, X=X_lagged,  f=self.f)
+        DM_lagged = DesignMatrix(y_lagged, X=X_lagged, f=self.f)
 
         DM_lagged.plot_scatter_lowess(lowess_dict=dict(), g_form=g_form)
 
     def g_to_x(self, l):
+        if not isinstance(l, list):
+            l = [l]
         if len(set(l).intersection((self.names.values()))) >= 1:
-            return l
+            return l if len(l) > 1 else l[0]
+        res = list(map(self.names.get, l))
+        if len(res) == 1:
+            return res[0]
         else:
-            return list(map(self.names.get, l))
+            return res
 
     def x_to_g(self, l):
+        if not isinstance(l, list):
+            l = [l]
         if len(set(l).intersection(self._inv_names.values())) >= 1:
-            return l
-        return list(map(self._inv_names.get, l))
+            return l if len(l) > 1 else l[0]
+        res = list(map(self._inv_names.get, l))
+        if len(res) == 1:
+            return res[0]
+        else:
+            return res
 
 
 class WindowGenerator:
@@ -248,14 +259,14 @@ class WindowGenerator:
             f'Label indices: {self.label_indices}',
             f'Label column name(s): {self.label_columns}'])
 
-    def split_window(self,features):
+    def split_window(self, features):
         inputs = features[:, self.input_slice, :]
         labels = features[:, self.labels_slice, :]
         if self.label_columns is not None:
             labels = tf.stack(
-            [labels[:, :, self.column_indices[name]] for name in
-             self.label_columns],
-            axis=-1)
+                [labels[:, :, self.column_indices[name]] for name in
+                 self.label_columns],
+                axis=-1)
 
         # Slicing doesn't preserve static shape information, so set the shapes
         # manually. This way the `tf.data.Datasets` are easier to inspect.
@@ -273,7 +284,6 @@ class WindowGenerator:
         )
         if kwargs is not None:
             self.config_dict.update(kwargs)
-        print(self.config_dict)
 
     def make_dataset(self, data: pd.DataFrame, ):
         if self.config_dict is None:
@@ -304,7 +314,7 @@ class WindowGenerator:
         plot_col_index = self.column_indices[plot_col]
         max_n = min(max_subplots, len(inputs))
         for n in range(max_n):
-            plt.subplot(max_n, 1, n+1)
+            plt.subplot(max_n, 1, n + 1)
             plt.ylabel(f'{plot_col} [normed]_batch_{n}')
             plt.plot(self.input_indices, inputs[n, :, plot_col_index],
                      label='Inputs', marker='.', zorder=-10)
@@ -320,12 +330,11 @@ class WindowGenerator:
             plt.scatter(self.label_indices, labels[n, :, label_col_index],
                         edgecolors='k', label='Labels', c='#2ca02c', s=64)
 
-
             from statslib.utils.common import flatten_lst as fl
             if model is not None:
                 predictions = model.predict(inputs)
 
-                if len(self.example)<1:
+                if len(self.example) < 1:
                     predictions = fl(predictions)
 
                     plt.scatter(self.label_indices, predictions,
@@ -333,21 +342,19 @@ class WindowGenerator:
                                 c='#ff7f0e', s=64)
                 else:
                     if feedback:
-                        predictions = tf.transpose(predictions, [0,2,1])
-                        predictions = predictions[n,0,:]
+                        predictions = tf.transpose(predictions, [0, 2, 1])
+                        predictions = predictions[n, 0, :]
 
                     else:
                         predictions = predictions[n, :]
                     plt.scatter(self.label_indices, predictions,
                                 marker='X', edgecolors='k', label='Predictions',
                                 c='#ff7f0e', s=64)
-            
 
             # if n == 0:
             #     plt.legend()
 
             plt.xlabel('Time')
-
 
     @property
     def train(self):
