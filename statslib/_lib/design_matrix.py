@@ -202,7 +202,7 @@ class DesignMatrix:
     def g_to_x(self, l):
         if not isinstance(l, list):
             l = [l]
-        if len(set(l).intersection((self.names.values()))) >= 1:
+        if len(set([c for c in l if c!= 'const']).intersection((self.names.values()))) >= 1:
             return l if len(l) > 1 else l[0]
         res = list(map(self.names.get, l))
         if len(res) == 1:
@@ -213,7 +213,7 @@ class DesignMatrix:
     def x_to_g(self, l):
         if not isinstance(l, list):
             l = [l]
-        if len(set(l).intersection(self._inv_names.values())) >= 1:
+        if len(set([c for c in l if c!= 'const']).intersection(self._inv_names.values())) >= 1:
             return l if len(l) > 1 else l[0]
         res = list(map(self._inv_names.get, l))
         if len(res) == 1:
