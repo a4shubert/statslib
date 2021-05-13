@@ -51,8 +51,8 @@ class GeneralModel:
 
         if 'start' in inspect.signature(self.fitted.predict).parameters:
             self.v_hat = self.fitted.predict(
-                self.endog(idx).index.min(),
-                self.endog(idx).index.max(),
+                self.exog(idx).index.min(),
+                self.exog(idx).index.max(),
                 exog=self.exog(idx))
         else:
             if self.gc.calib_type is CalibType.sm:
@@ -73,6 +73,7 @@ class GeneralModel:
             pass
 
     def plot_diagnostics(self, figsize=(15, 15), drop_names=None):
+        import math
         if drop_names is None:
             drop_names = list()
         std_resid = self.std_residuals
@@ -101,14 +102,14 @@ class GeneralModel:
             _sm.graphics.tsa.plot_acf(std_resid, ax=axs[1, 1])
             axs[1, 1].set_title('Correlogram')
 
-            axs[2, 0].scatter(self.fitted.fittedvalues, self.residuals.values)
-            axs[2, 0].hlines(0, min(self.fitted.fittedvalues), max(self.fitted.fittedvalues))
+            axs[2, 0].scatter(self.fitted.fittedvalues, self.residuals.values, color='red')
+            axs[2, 0].hlines(0, min(self.fitted.fittedvalues), max(self.fitted.fittedvalues), color='blue')
             axs[2, 0].set_xlabel('fitted')
             axs[2, 0].set_ylabel('resid')
             axs[2, 0].set_title('Fitted values vs. Residuals')
 
-            axs[2, 1].scatter(range(len(self.std_residuals)), self.std_residuals.values)
-            axs[2, 1].hlines(0, 0, len(self.std_residuals.values))
+            axs[2, 1].scatter(range(len(self.std_residuals)), self.std_residuals.values, color='red')
+            axs[2, 1].hlines(0, 0, len(self.std_residuals.values), color='blue')
             axs[2, 1].set_xlabel('index')
             axs[2, 1].set_ylabel('std_resid')
             axs[2, 1].set_title('Index plot of standardized residuals')
@@ -123,9 +124,9 @@ class GeneralModel:
             for curve in self.DM.exog_names:
                 if curve not in drop_names:
                     x_vals = self.DM.dm_ext[curve].iloc[self.forecast_index].values.tolist()
-
                     axs[i, j].scatter(x_vals, self.std_residuals.values)
-                    axs[i, j].hlines(0, min(x_vals), max(x_vals))
+                    min_max_x = [x for x in x_vals if not math.isnan(x)]
+                    axs[i, j].hlines(0, min(min_max_x), max(min_max_x), color='blue')
                     axs[i, j].set_xlabel(curve)
                     axs[i, j].set_ylabel('std_res')
                     j += 1
@@ -135,3 +136,4 @@ class GeneralModel:
             _plt.suptitle('Standardized Residuals vs. Explanatory Variable')
             _plt.tight_layout(pad=3)
             _plt.show()
+

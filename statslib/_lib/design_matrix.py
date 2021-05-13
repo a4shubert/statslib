@@ -5,6 +5,7 @@ from itertools import product
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sns
 import statsmodels.api as sm
 import tensorflow as tf
 
@@ -31,7 +32,6 @@ class DesignMatrix:
 
         if y is not None:
             if f is None:
-
                 self.f = identical()
             else:
                 self.f = deepcopy(f)
@@ -60,7 +60,7 @@ class DesignMatrix:
             else:
                 self.gX = X.agg(dict(zip(X.columns.tolist(), self.gs)))
             if add_const:
-                self.gX = sm.tools.tools.add_constant(self.gX)
+                self.gX['const'] = 1.0
             self.gX.rename(columns=self._inv_names, inplace=True)
 
             if y is not None:
@@ -78,33 +78,35 @@ class DesignMatrix:
             self.dm_ext = pd.concat([self.y, self.v], axis=1)
             self.dm = self.dm_ext.dropna(axis=0)
             self.gX = None
-        if self._n_x is not None and self._n_y is not None and self._n_x != self._n_y:
-            print('WARNING: y and X dimensions are not the same!')
-            self.n = self.dm.shape[0]
-        else:
-            self.n = self._n_y if self._n_y is not None else self._n_x
+        self.n = self.dm.shape[0]
         self.dm_ext.index.name = 't'
         self.dm.index.name = 't'
         self.names_tpl = to_namedtuple(self.names, True)
 
-    def describe(self, figsize=(8 * 1.6, 8)):
+    def describe(self, figsize=(8 * 1.6, 8), g_form=False):
+        if g_form:
+            endog_name = self.x_to_g(self.endog_name)
+            exog_names = self.x_to_g(self.exog_names)
+        else:
+            endog_name = self.endog_name
+            exog_names = self.exog_names
         if self.exog_names:
             if self.endog_name:
-                lst = [self.dm_ext[self.endog_name].describe()] + [self.dm_ext[c].describe() for c in self.exog_names]
+                lst = [self.dm_ext[endog_name].describe()] + [self.dm_ext[c].describe() for c in exog_names]
             else:
-                lst = [self.dm_ext[c].describe() for c in self.exog_names]
+                lst = [self.dm_ext[c].describe() for c in exog_names]
         else:
-            lst = [self.dm_ext[self.endog_name].describe()]
+            lst = [self.dm_ext[endog_name].describe()]
         res_df = pd.concat(lst, axis=1)
         if res_df.T.shape[0] == 1:
             fig, ax = plt.subplots(figsize=figsize)
             res_df.drop('count', axis=0).T.plot(kind='bar', ax=ax)
         else:
             fig, ax = plt.subplots(figsize=figsize)
-            plot_df = res_df.drop('count', axis=0).T.reindex()
-            plot_df.plot(ax=ax)
-            plt.xticks(range(0, len(plot_df.index)), plot_df.index)
-            ax.tick_params(axis='x', rotation=45)
+            _ = self.dm_ext[[endog_name]+exog_names].melt(var_name=' ', value_name='')
+            sns.violinplot(x=' ', y='', data=_, ax=ax)
+            # plt.xticks(range(0, len(_.index)), _.index)
+            # ax.tick_params(axis='x', rotation=45)
         return res_df
 
     def seasonal_decompose(self, **kwargs):
@@ -142,7 +144,7 @@ class DesignMatrix:
                 ax=axs[i, j])
             axs[i, j].legend(['lowess'])
             axs[i, j].set_ylabel(combination[0])
-            axs[i, j].set_xlabel(combination[1])
+            axs[i, j].set_xlabel(self.g_to_x(combination[1]))
             j += 1
             if j % L == 0:
                 i += 1
@@ -150,7 +152,7 @@ class DesignMatrix:
         plt.tight_layout()
         plt.show()
 
-    def plot(self, only_names=None, drop_names=None, **kwargs):
+    def plot(self, only_names=None, drop_names=None, g_form=False, **kwargs):
         if drop_names is None:
             drop_names = list()
         else:
@@ -158,14 +160,21 @@ class DesignMatrix:
         if only_names is None:
             only_names = self.names.values()
         else:
+            drop_names = list()
             only_names = self.g_to_x(only_names)
         from statslib.utils.common import flatten_lst
         from statslib.utils.plots import plot_to_grid
-        mask = flatten_lst(
-            [[v, k] for k, v in self.names.items() if k != 'const' and v not in drop_names and v in only_names])
+        if g_form:
+            mask = flatten_lst(
+                [[v] + [k] for k, v in self.names.items() if k != 'const' and v not in drop_names and v in only_names])
+        else:
+            mask = flatten_lst(
+                [[v] for k, v in self.names.items() if k != 'const' and v not in drop_names and v in only_names])
         plot_to_grid(self.dm_ext[mask], plots_per_row=2, title='', **kwargs)
 
-    def plot_covariate_vs_lag(self, covariate_name, up_to_lag):
+    def plot_covariate_vs_lag(self, covariate_name, up_to_lag, g_form=False):
+        if g_form:
+            covariate_name = self.x_to_g(covariate_name)
         h = up_to_lag
         cov_df = self.dm_ext[covariate_name].dropna()
         lagged_df = pd.concat([cov_df] + [cov_df.shift(i).rename(f'Lag{i}_{covariate_name}') for i in range(1, h + 1)],
@@ -175,29 +184,45 @@ class DesignMatrix:
         DM_lagged = DesignMatrix(y_lagged, X=X_lagged)
         DM_lagged.plot_scatter_lowess(lowess_dict=dict())
 
-    def plot_dependent_vs_covariage_lag(self, covariate_name, up_to_lag):
+    def plot_dependent_vs_covariage_lag(self, covariate_name, up_to_lag, g_form=False):
+        if g_form:
+            covariate_name = self.x_to_g(covariate_name)
+
         h = up_to_lag
         cov_df = self.dm_ext[covariate_name].dropna()
         lagged_df = pd.concat([cov_df] + [cov_df.shift(i).rename(f'Lag{i}_{covariate_name}') for i in range(1, h + 1)],
                               axis=1).dropna()
+
         y_lagged = self.y.rename(self.endog_name)
         X_lagged = lagged_df.drop([covariate_name], axis=1)
-        DM_lagged = DesignMatrix(y_lagged, X=X_lagged)
-        DM_lagged.plot_scatter_lowess(lowess_dict=dict())
+        DM_lagged = DesignMatrix(y_lagged, X=X_lagged, f=self.f)
+
+        DM_lagged.plot_scatter_lowess(lowess_dict=dict(), g_form=g_form)
 
     def g_to_x(self, l):
-        if len(set(l).intersection((self.names.values()))) > 1:
-            return l
+        if not isinstance(l, list):
+            l = [l]
+        if len(set([c for c in l if c!= 'const']).intersection((self.names.values()))) >= 1:
+            return l if len(l) > 1 else l[0]
+        res = list(map(self.names.get, l))
+        if len(res) == 1:
+            return res[0]
         else:
-            return list(map(self.names.get, l))
+            return res
 
     def x_to_g(self, l):
-        if len(set(l).intersection(self._inv_names.values())) > 1:
-            return l
-        return list(map(self._inv_names.get, l))
+        if not isinstance(l, list):
+            l = [l]
+        if len(set([c for c in l if c!= 'const']).intersection(self._inv_names.values())) >= 1:
+            return l if len(l) > 1 else l[0]
+        res = list(map(self._inv_names.get, l))
+        if len(res) == 1:
+            return res[0]
+        else:
+            return res
 
 
-class WindowGenerator():
+class WindowGenerator:
     def __init__(self, input_width, label_width, shift, train_df, val_df, test_df, label_columns=None):
         # Store the raw dat
         self.train_df = train_df
@@ -234,14 +259,14 @@ class WindowGenerator():
             f'Label indices: {self.label_indices}',
             f'Label column name(s): {self.label_columns}'])
 
-    def split_window(self,features):
+    def split_window(self, features):
         inputs = features[:, self.input_slice, :]
         labels = features[:, self.labels_slice, :]
         if self.label_columns is not None:
             labels = tf.stack(
-            [labels[:, :, self.column_indices[name]] for name in
-             self.label_columns],
-            axis=-1)
+                [labels[:, :, self.column_indices[name]] for name in
+                 self.label_columns],
+                axis=-1)
 
         # Slicing doesn't preserve static shape information, so set the shapes
         # manually. This way the `tf.data.Datasets` are easier to inspect.
@@ -259,7 +284,6 @@ class WindowGenerator():
         )
         if kwargs is not None:
             self.config_dict.update(kwargs)
-        print(self.config_dict)
 
     def make_dataset(self, data: pd.DataFrame, ):
         if self.config_dict is None:
@@ -284,13 +308,13 @@ class WindowGenerator():
             self._example = result
         return result
 
-    def plot(self, model=None, plot_col='v', max_subplots=3):
+    def plot(self, plot_col=None, model=None, max_subplots=3, feedback=False):
         inputs, labels = self.example
         plt.figure(figsize=(12, 8))
         plot_col_index = self.column_indices[plot_col]
         max_n = min(max_subplots, len(inputs))
         for n in range(max_n):
-            plt.subplot(max_n, 1, n+1)
+            plt.subplot(max_n, 1, n + 1)
             plt.ylabel(f'{plot_col} [normed]_batch_{n}')
             plt.plot(self.input_indices, inputs[n, :, plot_col_index],
                      label='Inputs', marker='.', zorder=-10)
@@ -305,17 +329,32 @@ class WindowGenerator():
 
             plt.scatter(self.label_indices, labels[n, :, label_col_index],
                         edgecolors='k', label='Labels', c='#2ca02c', s=64)
-            if model is not None:
-                predictions = model(inputs)
-                plt.scatter(self.label_indices, predictions[n, :, label_col_index],
-                          marker='X', edgecolors='k', label='Predictions',
-                          c='#ff7f0e', s=64)
 
-            if n == 0:
-                plt.legend()
+            from statslib.utils.common import flatten_lst as fl
+            if model is not None:
+                predictions = model.predict(inputs)
+
+                if len(self.example) < 1:
+                    predictions = fl(predictions)
+
+                    plt.scatter(self.label_indices, predictions,
+                                marker='X', edgecolors='k', label='Predictions',
+                                c='#ff7f0e', s=64)
+                else:
+                    if feedback:
+                        predictions = tf.transpose(predictions, [0, 2, 1])
+                        predictions = predictions[n, 0, :]
+
+                    else:
+                        predictions = predictions[n, :]
+                    plt.scatter(self.label_indices, predictions,
+                                marker='X', edgecolors='k', label='Predictions',
+                                c='#ff7f0e', s=64)
+
+            # if n == 0:
+            #     plt.legend()
 
             plt.xlabel('Time')
-
 
     @property
     def train(self):
