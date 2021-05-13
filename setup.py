@@ -16,15 +16,18 @@ setuptools.setup(
     classifiers=[
         "Programming Language :: Python :: 3"
     ],
-    include_package_data=True,
+    
 	install_requires=[
-	'matplotlib==3.3.4',
-	'pandas==1.1.5',
-	'seaborn==0.11.1',
-	'statsmodels==0.12.2',
-	'tensorflow==2.4.1',
-	'openpyxl==3.0.7',
-	'scikit-learn==0.24.2',
-	'beautifulsoup4==4.9.3',
-]
+		'matplotlib==3.3.4',
+		'pandas==1.1.5',
+		'seaborn==0.11.1',
+		'statsmodels==0.12.2',
+		'tensorflow==2.4.1',
+		'openpyxl==3.0.7',
+		'scikit-learn==0.24.2',
+		'beautifulsoup4==4.9.3',
+		'numpy==1.19.2'
+	],
+	include_package_data=True,
+	package_data={'': ['datasets/*.csv']},
 )
